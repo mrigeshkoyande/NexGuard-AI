@@ -1,0 +1,7 @@
+{"timestamp": "2026-02-08T17:18:21.017577Z", "log_id": "evt_1770571101017_6789", "event_type": "API_REQUEST", "endpoint": "/health", "src_ip": "10.0.0.5", "status_code": 200, "user_agent": "Mozilla/5.0", "message": "HTTP 200 /health"}
+{"timestamp": "2026-02-08T17:18:21.017841Z", "log_id": "evt_1770571101017_1441", "event_type": "SSH_LOGIN", "status": "FAILURE", "user": "admin", "src_ip": "192.168.1.105", "message": "Failed password for invalid user"}
+{"timestamp": "2026-02-08T17:18:21.532268Z", "log_id": "evt_1770571101532_2686", "event_type": "SSH_LOGIN", "status": "FAILURE", "user": "admin", "src_ip": "192.168.1.105", "message": "Failed password for invalid user"}
+{"timestamp": "2026-02-08T17:18:22.043548Z", "log_id": "evt_1770571102043_3347", "event_type": "SSH_LOGIN", "status": "FAILURE", "user": "admin", "src_ip": "192.168.1.105", "message": "Failed password for invalid user"}
+{"timestamp": "2026-02-08T17:18:22.555229Z", "log_id": "evt_1770571102555_3870", "event_type": "SSH_LOGIN", "status": "FAILURE", "user": "admin", "src_ip": "192.168.1.105", "message": "Failed password for invalid user"}
+{"timestamp": "2026-02-08T17:18:23.068861Z", "log_id": "evt_1770571103068_5271", "event_type": "SSH_LOGIN", "status": "FAILURE", "user": "admin", "src_ip": "192.168.1.105", "message": "Failed password for invalid user"}
+{"timestamp": "2026-02-08T17:18:23.579476Z", "log_id": "evt_1770571103579_4992", "event_type": "SSH_LOGIN", "status": "SUCCESS", "user": "admin", "src_ip": "192.168.1.105", "message": "Accepted publickey for user"}
