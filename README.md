@@ -1,4 +1,4 @@
-# 🛡️ SENTINEL-X - Professional Security Dashboard
+# 🛡️ NEXGUARD-AI - Professional Security Dashboard
 
 Autonomous AI Security Agent for Real-Time Threat Detection, Root-Cause Analysis & Auto-Response
 
