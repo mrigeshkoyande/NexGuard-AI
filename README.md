@@ -138,6 +138,16 @@ dashboard/
 
 ---
 
+screen shorts 
+![Screenshot 2026-03-01 223858](https://github.com/user-attachments/assets/ca38e321-7d0c-4db7-9f99-9bac6b92c010)
+![Screenshot 2026-03-01 224027](https://github.com/user-attachments/assets/49b9361c-b7e0-4eca-bc2f-563c21269c3c)
+![Screenshot 2026-03-01 224142](https://github.com/user-attachments/assets/add6d770-f755-4888-95ad-ed02c1fab216)
+![Screenshot 2026-03-01 224223](https://github.com/user-attachments/assets/452ccfbc-9880-4611-acf8-547ba81bdd42)
+![Screenshot 2026-03-01 223744](https://github.com/user-attachments/assets/8b3c2efd-b2a8-45a2-ad2d-b04f99f249b0)
+![Screenshot 2026-03-01 223829](https://github.com/user-attachments/assets/d9aac562-4b19-4f5b-b86b-26d46e2a06be)
+
+
+
 ## 📊 Dashboard Sections
 
 1. **Header** - System name, version, status, live clock
