@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>NexGuard-AI | SENTINEL-X Security Operations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #050a05;
+            --bg2: #0a100a;
+            --bg3: #0f180f;
+            --green: #00ff41;
+            --green2: #00cc33;
+            --green3: #39ff14;
+            --red: #ff003c;
+            --cyan: #00e5ff;
+            --yellow: #ffd700;
+            --magenta: #ff00cc;
+            --text: #c8ffc8;
+            --dim: #5a8a5a;
+            --border: #1a3a1a;
+            --card: #0d1a0d;
+            --sidebar-w: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--green2);
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo-area {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--green);
+            letter-spacing: 2px;
+        }
+
+        .logo-sub {
+            font-size: 10px;
+            color: var(--dim);
+            margin-top: 3px;
+            letter-spacing: 3px;
+        }
+
+        .logo-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.5s infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+
+        nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--dim);
+            transition: .2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--green);
+            background: rgba(0, 255, 65, .05);
+        }
+
+        .nav-item.active {
+            color: var(--green);
+            border-left-color: var(--green);
+            background: rgba(0, 255, 65, .08);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 10px;
+            color: var(--dim);
+        }
+
+        .sys-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .sys-stat span:last-child {
+            color: var(--green);
+        }
+
+        .mini-bar {
+            height: 3px;
+            background: #1a3a1a;
+            border-radius: 2px;
+            margin-top: 2px;
+        }
+
+        .mini-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--green);
+            animation: barPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes barPulse {
+
+            0%,
+            100% {
+                opacity: .7
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        /* MAIN */
+        #main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--green);
+            letter-spacing: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 11px;
+            color: var(--dim);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border: 1px solid var(--green2);
+            border-radius: 2px;
+            color: var(--green);
+            font-size: 10px;
+            background: rgba(0, 255, 65, .04);
+        }
+
+        #content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        /* PAGE SECTIONS */
+        .page {
+            display: none;
+            animation: fadeIn .3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            color: var(--green);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* GRID */
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .grid4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 16px;
+            transition: .2s;
+        }
+
+        .card:hover {
+            border-color: var(--green2);
+        }
+
+        .card-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--dim);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        /* STAT CARDS */
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+            transition: .2s;
+            cursor: default;
+        }
+
+        .stat-card:hover {
+            border-color: var(--green);
+            box-shadow: 0 0 15px rgba(0, 255, 65, .1);
+        }
+
+        .stat-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 6px 0;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--dim);
+        }
+
+        .stat-red .stat-num {
+            color: var(--red);
+            text-shadow: 0 0 10px var(--red);
+        }
+
+        .stat-yellow .stat-num {
+            color: var(--yellow);
+            text-shadow: 0 0 10px var(--yellow);
+        }
+
+        .stat-cyan .stat-num {
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .stat-green .stat-num {
+            color: var(--green);
+            text-shadow: 0 0 10px var(--green);
+        }
+
+        /* CANVAS */
+        canvas {
+            display: block;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #004400, #007700);
+            color: var(--green);
+            border: 1px solid var(--green2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #006600, #00aa00);
+            box-shadow: 0 0 12px rgba(0, 255, 65, .3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #440000, #770000);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 12px rgba(255, 0, 60, .3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 229, 255, .07);
+        }
+
+        /* THREAT ITEMS */
+        .threat-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, .3);
+            transition: .2s;
+        }
+
+        .threat-item:hover {
+            border-color: var(--green2);
+            background: rgba(0, 255, 65, .03);
+        }
+
+        .sev-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .sev-critical .sev-dot {
+            background: var(--red);
+            box-shadow: 0 0 6px var(--red);
+        }
+
+        .sev-high .sev-dot {
+            background: var(--yellow);
+            box-shadow: 0 0 6px var(--yellow);
+        }
+
+        .sev-medium .sev-dot {
+            background: orange;
+            box-shadow: 0 0 6px orange;
+        }
+
+        .sev-low .sev-dot {
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+        }
+
+        .threat-name {
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .threat-meta {
+            font-size: 10px;
+            color: var(--dim);
+        }
+
+        .threat-badge {
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 2px;
+            letter-spacing: 1px;
+        }
+
+        .badge-active {
+            background: rgba(255, 0, 60, .15);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .badge-mitigated {
+            background: rgba(0, 255, 65, .1);
+            color: var(--green);
+            border: 1px solid var(--green2);
+        }
+
+        .badge-investigating {
+            background: rgba(255, 215, 0, .1);
+            color: var(--yellow);
+            border: 1px solid var(--yellow);
+        }
+
+        /* LOG FEED */
+        .log-feed {
+            height: 220px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .log-line {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(26, 58, 26, .3);
+        }
+
+        .log-info {
+            color: var(--cyan);
+        }
+
+        .log-warn {
+            color: var(--yellow);
+        }
+
+        .log-error {
+            color: var(--red);
+        }
+
+        .log-ok {
+            color: var(--green);
+        }
+
+        .log-time {
+            color: var(--dim);
+            margin-right: 6px;
+        }
+
+        /* PROGRESS */
+        .progress-row {
+            margin-bottom: 10px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .progress-label span:last-child {
+            color: var(--green);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #1a2a1a;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--green2), var(--green));
+            transition: width 1s ease;
+        }
+
+        /* AGENT CARDS */
+        .agent-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 14px;
+            transition: .2s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--green2);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .agent-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .agent-name {
+            font-size: 12px;
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        .agent-role {
+            font-size: 10px;
+            color: var(--dim);
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+
+        .status-active {
+            color: var(--green);
+        }
+
+        .status-idle {
+            color: var(--dim);
+        }
+
+        /* TOGGLE */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-label {
+            font-size: 12px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 38px;
+            height: 20px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #1a3a1a;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--dim);
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+        .toggle input:checked+.toggle-slider {
+            background: rgba(0, 255, 65, .3);
+        }
+
+        .toggle input:checked+.toggle-slider:before {
+            transform: translateX(18px);
+            background: var(--green);
+        }
+
+        /* CHART */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 100px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(0deg, var(--green2), var(--green3));
+            border-radius: 2px 2px 0 0;
+            transition: height .5s ease;
+            min-width: 8px;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            background: linear-gradient(0deg, var(--cyan), #00ffcc);
+        }
+
+        /* REGION CARDS */
+        .region-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 14px;
+            cursor: pointer;
+            transition: .2s;
+            text-align: center;
+        }
+
+        .region-card:hover,
+        .region-card.selected {
+            border-color: var(--green);
+            background: rgba(0, 255, 65, .05);
+        }
+
+        .region-name {
+            font-size: 12px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .region-count {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--red);
+            text-shadow: 0 0 8px var(--red);
+        }
+
+        /* REPORT */
+        .report-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, .2);
+            transition: .2s;
+        }
+
+        .report-row:hover {
+            border-color: var(--green2);
+        }
+
+        /* PIE */
+        .pie-legend {
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 11px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* GLOW TEXT */
+        .glow {
+            color: var(--green);
+            text-shadow: 0 0 8px var(--green);
+        }
+
+        .glow-red {
+            color: var(--red);
+            text-shadow: 0 0 8px var(--red);
+        }
+
+        /* NOTIFICATION */
+        #notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg2);
+            border: 1px solid var(--green2);
+            padding: 12px 18px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--green);
+            z-index: 999;
+            transform: translateX(140%);
+            transition: .4s cubic-bezier(.4, 0, .2, 1);
+            max-width: 280px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, .2);
+        }
+
+        #notification.show {
+            transform: translateX(0);
+        }
+
+        /* SCAN ANIMATION */
+        @keyframes scan {
+            0% {
+                top: 0
+            }
+
+            100% {
+                top: 100%
+            }
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+            animation: scan 2s linear infinite;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <div class="logo-area">
+            <div class="logo-title"><span class="logo-dot"></span>NEXGUARD</div>
+            <div class="logo-sub">SENTINEL-X v2.0</div>
+        </div>
+        <nav id="nav">
+            <div class="nav-item active" data-page="overview"> <span class="nav-icon">⬡</span> OVERVIEW</div>
+            <div class="nav-item" data-page="threats"> <span class="nav-icon">⚠</span> THREATS</div>
+            <div class="nav-item" data-page="events"> <span class="nav-icon">⚡</span> LIVE EVENTS</div>
+            <div class="nav-item" data-page="agents"> <span class="nav-icon">🤖</span> AI AGENTS</div>
+            <div class="nav-item" data-page="network"> <span class="nav-icon">🌐</span> NETWORK MAP</div>
+            <div class="nav-item" data-page="analytics"> <span class="nav-icon">📊</span> ANALYTICS</div>
+            <div class="nav-item" data-page="reports"> <span class="nav-icon">📋</span> REPORTS</div>
+            <div class="nav-item" data-page="settings"> <span class="nav-icon">⚙</span> SETTINGS</div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sys-stat"><span>CPU</span><span id="cpu-val">34%</span></div>
+            <div class="mini-bar">
+                <div class="mini-bar-fill" id="cpu-bar" style="width:34%"></div>
+            </div>
+            <div class="sys-stat" style="margin-top:8px"><span>MEM</span><span id="mem-val">61%</span></div>
+            <div class="mini-bar">
+                <div class="mini-bar-fill" id="mem-bar" style="width:61%;background:var(--cyan)"></div>
+            </div>
+            <div class="sys-stat" style="margin-top:8px"><span>NET</span><span id="net-val">1.2 GB/s</span></div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main">
+        <div id="header">
+            <div class="header-left">◈ SECURITY OPERATIONS CENTER</div>
+            <div class="header-right">
+                <div class="status-badge"><span class="logo-dot"></span>ALL SYSTEMS NOMINAL</div>
+                <span>🕒 <span id="clock">--:--:--</span></span>
+                <span style="color:var(--dim)">2026-02-26</span>
+            </div>
+        </div>
+
+        <div id="content">
+
+            <!-- ═══════════════ PAGE: OVERVIEW ═══════════════ -->
+            <div class="page active" id="page-overview">
+                <div class="page-title">⬡ SYSTEM OVERVIEW</div>
+
+                <div class="grid4">
+                    <div class="stat-card stat-red">
+                        <div class="stat-label">ACTIVE THREATS</div>
+                        <div class="stat-num" id="s-threats">7</div>
+                        <div class="stat-label">↑ 2 new</div>
+                    </div>
+                    <div class="stat-card stat-yellow">
+                        <div class="stat-label">EVENTS / MIN</div>
+                        <div class="stat-num" id="s-events">142</div>
+                        <div class="stat-label">↑ HIGH TRAFFIC</div>
+                    </div>
+                    <div class="stat-card stat-cyan">
+                        <div class="stat-label">AI AGENTS</div>
+                        <div class="stat-num">5</div>
+                        <div class="stat-label">5 ACTIVE</div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-label">UPTIME</div>
+                        <div class="stat-num" id="s-uptime">99.9</div>
+                        <div class="stat-label">% SLA MET</div>
+                    </div>
+                </div>
+
+                <div class="grid2">
+                    <div class="card">
+                        <div class="card-title">🧠 AGENT BRAIN — REASONING</div>
+                        <div id="agent-brain" class="log-feed"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">⚡ LIVE LOG FEED</div>
+                        <div id="live-log" class="log-feed"></div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:16px">
+                    <div class="card-title">📊 ATTACK VECTOR TREND — 24H</div>
+                    <div class="bar-chart" id="bar-chart"></div>
+                    <div
+                        style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-top:4px;">
+                        <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
+                    </div>
+                </div>
+
+                <div class="grid2">
+                    <div class="card">
+                        <div class="card-title">💻 SYSTEM HEALTH</div>
+                        <div class="progress-row">
+                            <div class="progress-label"><span>CPU LOAD</span><span id="h-cpu">34%</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="ph-cpu" style="width:34%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-row">
+                            <div class="progress-label"><span>MEMORY</span><span id="h-mem">61%</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="ph-mem" style="width:61%;background:var(--cyan)"></div>
+                            </div>
+                        </div>
+                        <div class="progress-row">
+                            <div class="progress-label"><span>DISK I/O</span><span>28%</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width:28%;background:var(--magenta)"></div>
+                            </div>
+                        </div>
+                        <div class="progress-row">
+                            <div class="progress-label"><span>NETWORK</span><span>73%</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width:73%;background:var(--yellow)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🔴 ACTIVE THREAT FEED</div>
+                        <div id="threat-feed" style="max-height:160px;overflow-y:auto;font-size:11px;"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+                    <button class="btn btn-primary" onclick="notify('✅ Shield Protocol ACTIVATED')">🛡 ACTIVATE
+                        SHIELD</button>
+                    <button class="btn btn-primary" onclick="notify('🔍 Full scan initiated...')">🔍 RUN SCAN</button>
+                    <button class="btn btn-primary" onclick="notify('📡 Alert dispatched to SOC team')">📡 SEND
+                        ALERT</button>
+                    <button class="btn btn-outline" onclick="nav('reports')">📋 REPORTS</button>
+                    <button class="btn btn-danger" onclick="if(confirm('Emergency stop?'))notify('🛑 SYSTEM HALTED')">🛑
+                        EMERGENCY STOP</button>
+                    <button class="btn btn-danger" onclick="notify('🔒 System locked')">🔒 LOCK SYSTEM</button>
+                </div>
+            </div>
+
+            <!-- ═══════════════ PAGE: THREATS ═══════════════ -->
+            <div class="page" id="page-threats">
+                <div class="page-title">⚠ THREAT INTELLIGENCE</div>
+                <div class="grid4" style="margin-bottom:16px">
+                    <div class="stat-card stat-red">
+                        <div class="stat-label">CRITICAL</div>
+                        <div class="stat-num">3</div>
+                    </div>
+                    <div class="stat-card stat-yellow">
+                        <div class="stat-label">HIGH</div>
+                        <div class="stat-num">4</div>
+                    </div>
+                    <div class="stat-card" style="text-align:center;">
+                        <div class="stat-label">MEDIUM</div>
+                        <div class="stat-num" style="color:orange;text-shadow:0 0 10px orange;">8</div>
+                    </div>
+                    <div class="stat-card stat-cyan">
+                        <div class="stat-label">LOW</div>
+                        <div class="stat-num">12</div>
+                    </div>
+                </div>
+                <div id="threats-list"></div>
+            </div>
+
+            <!-- ═══════════════ PAGE: EVENTS ═══════════════ -->
+            <div class="page" id="page-events">
+                <div class="page-title">⚡ LIVE EVENT STREAM</div>
+                <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                    <button class="btn btn-outline" onclick="filterLogs('all')">ALL</button>
+                    <button class="btn btn-danger" onclick="filterLogs('error')">CRITICAL</button>
+                    <button class="btn btn-outline" onclick="filterLogs('warn')"
+                        style="color:var(--yellow);border-color:var(--yellow)">WARNING</button>
+                    <button class="btn btn-outline" onclick="filterLogs('info')">INFO</button>
+                </div>
+                <div class="card">
+                    <div id="event-log" style="height:500px;overflow-y:auto;font-size:11px;line-height:2;"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ PAGE: AGENTS ═══════════════ -->
+            <div class="page" id="page-agents">
+                <div class="page-title">🤖 AUTONOMOUS AI AGENTS</div>
+                <div class="grid4" style="margin-bottom:20px">
+                    <div class="stat-card stat-green">
+                        <div class="stat-label">TOTAL AGENTS</div>
+                        <div class="stat-num">5</div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-label">ACTIVE</div>
+                        <div class="stat-num">5</div>
+                    </div>
+                    <div class="stat-card stat-yellow">
+                        <div class="stat-label">TASKS TODAY</div>
+                        <div class="stat-num">847</div>
+                    </div>
+                    <div class="stat-card stat-cyan">
+                        <div class="stat-label">AVG HEALTH</div>
+                        <div class="stat-num">98%</div>
+                    </div>
+                </div>
+                <div class="grid2" id="agents-grid"></div>
+            </div>
+
+            <!-- ═══════════════ PAGE: NETWORK MAP ═══════════════ -->
+            <div class="page" id="page-network">
+                <div class="page-title">🌐 NETWORK TOPOLOGY MAP</div>
+                <div class="grid2">
+                    <div class="card" style="position:relative;overflow:hidden;">
+                        <div class="card-title">LIVE TOPOLOGY</div>
+                        <div class="scan-line"></div>
+                        <canvas id="netCanvas" width="480" height="360"></canvas>
+                        <div id="node-info" style="margin-top:10px;font-size:11px;color:var(--dim);">← Click a node to
+                            inspect</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">NODE DETAILS</div>
+                        <div id="node-details">
+                            <div style="color:var(--dim);font-size:12px;">Select a node on the map to see details.</div>
+                        </div>
+                        <div style="margin-top:14px">
+                            <div class="card-title">CONNECTION STATUS</div>
+                            <div id="conn-list" style="font-size:11px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ PAGE: ANALYTICS ═══════════════ -->
+            <div class="page" id="page-analytics">
+                <div class="page-title">📊 SYSTEM ANALYTICS</div>
+                <div class="grid2">
+                    <div class="card">
+                        <div class="card-title">THREAT DETECTION TREND — 24H</div>
+                        <div class="bar-chart" id="analytics-chart" style="height:120px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">THREAT TYPE DISTRIBUTION</div>
+                        <canvas id="pieCanvas" width="200" height="160" style="margin:0 auto;display:block;"></canvas>
+                        <div class="pie-legend" id="pie-legend"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">AGENT PERFORMANCE — ACCURACY</div>
+                    <div id="agent-perf"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ PAGE: REPORTS ═══════════════ -->
+            <div class="page" id="page-reports">
+                <div class="page-title">📋 SECURITY REPORTS</div>
+                <div style="display:flex;gap:10px;margin-bottom:16px;">
+                    <button class="btn btn-primary" onclick="notify('📄 Generating report...')">+ GENERATE
+                        REPORT</button>
+                    <button class="btn btn-outline" onclick="notify('📤 All reports exported')">📤 EXPORT ALL</button>
+                </div>
+                <div id="reports-list"></div>
+            </div>
+
+            <!-- ═══════════════ PAGE: SETTINGS ═══════════════ -->
+            <div class="page" id="page-settings">
+                <div class="page-title">⚙ SYSTEM SETTINGS</div>
+                <div class="grid2">
+                    <div class="card">
+                        <div class="card-title">🔔 NOTIFICATIONS</div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Enable Alerts</div><label class="toggle"><input type="checkbox"
+                                    checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Email Notifications</div><label class="toggle"><input
+                                    type="checkbox" checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Auto-Response</div><label class="toggle"><input type="checkbox" />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">SMS Alerts</div><label class="toggle"><input type="checkbox" />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🔐 SECURITY</div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Two-Factor Auth</div><label class="toggle"><input type="checkbox"
+                                    checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">IP Whitelisting</div><label class="toggle"><input
+                                    type="checkbox" />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Session Timeout (30m)</div><label class="toggle"><input
+                                    type="checkbox" checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Audit Logging</div><label class="toggle"><input type="checkbox"
+                                    checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">💾 DATA MANAGEMENT</div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Auto Backup</div><label class="toggle"><input type="checkbox"
+                                    checked />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">Export Logs Daily</div><label class="toggle"><input
+                                    type="checkbox" />
+                                <div class="toggle-slider"></div>
+                            </label>
+                        </div>
+                        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+                            <div style="font-size:11px;color:var(--dim);margin-bottom:6px">DATA RETENTION (DAYS)</div>
+                            <input type="range" min="7" max="365" value="90"
+                                style="width:100%;accent-color:var(--green)" />
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🔑 API CONFIGURATION</div>
+                        <div style="margin-bottom:10px">
+                            <div style="font-size:10px;color:var(--dim);margin-bottom:5px">API KEY</div>
+                            <input type="text" value="nx-••••••••••••••••"
+                                style="width:100%;background:#000;border:1px solid var(--border);color:var(--text);padding:7px 10px;font-family:inherit;font-size:11px;border-radius:2px;" />
+                        </div>
+                        <div style="margin-bottom:12px">
+                            <div style="font-size:10px;color:var(--dim);margin-bottom:5px">ENDPOINT</div>
+                            <input type="text" value="http://localhost:8000"
+                                style="width:100%;background:#000;border:1px solid var(--border);color:var(--text);padding:7px 10px;font-family:inherit;font-size:11px;border-radius:2px;" />
+                        </div>
+                        <button class="btn btn-outline" onclick="notify('✅ Connection verified')"
+                            style="margin-right:8px">TEST CONNECTION</button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="notify('💾 Settings saved successfully')"
+                    style="margin-top:10px;padding:10px 24px;">💾 SAVE SETTINGS</button>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+    <div id="notification"></div>
+
+    <script>
+        // ──────────────────────────────────────────
+        // CLOCK
+        // ──────────────────────────────────────────
+        function updateClock() {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-GB');
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // ──────────────────────────────────────────
+        // NAVIGATION
+        // ──────────────────────────────────────────
+        function nav(pageId) {
+            document.querySelectorAll('.nav-item').forEach(n => {
+                n.classList.toggle('active', n.dataset.page === pageId);
+            });
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            if (pageId === 'network') setTimeout(initNetwork, 100);
+            if (pageId === 'analytics') setTimeout(() => { buildAnalyticsChart(); drawPie(); buildAgentPerf(); }, 100);
+        }
+        document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => nav(n.dataset.page)));
+
+        // ──────────────────────────────────────────
+        // NOTIFICATION
+        // ──────────────────────────────────────────
+        function notify(msg) {
+            const el = document.getElementById('notification');
+            el.textContent = msg; el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3200);
+        }
+
+        // ──────────────────────────────────────────
+        // DATA
+        // ──────────────────────────────────────────
+        const THREATS = [
+            { name: 'SQL Injection Attempt', ip: '192.168.12.45', sev: 'critical', status: 'active', time: '01:42:33', desc: 'Repeated SQLi vectors on /api/auth endpoint' },
+            { name: 'Brute Force — SSH', ip: '10.0.0.88', sev: 'critical', status: 'active', time: '01:38:17', desc: '2,400 failed login attempts in 60s' },
+            { name: 'Ransomware Signature', ip: '172.16.0.52', sev: 'critical', status: 'investigating', time: '01:30:05', desc: 'WannaCry variant detected in memory' },
+            { name: 'DDoS — SYN Flood', ip: '198.51.100.7', sev: 'high', status: 'mitigated', time: '00:58:44', desc: 'Peak 1.8M packets/s from botnet C2' },
+            { name: 'XSS Injection', ip: '203.0.113.22', sev: 'high', status: 'active', time: '00:44:19', desc: 'Reflected XSS on dashboard portal' },
+            { name: 'Privilege Escalation', ip: '10.0.1.14', sev: 'high', status: 'investigating', time: '00:31:02', desc: 'Sudo exploit attempt, CVSS 9.8' },
+            { name: 'C2 Beacon Detected', ip: '185.220.101.5', sev: 'high', status: 'active', time: '00:22:57', desc: 'Cobalt Strike beacon on port 4444' },
+            { name: 'Port Scan — Aggressive', ip: '45.33.32.156', sev: 'medium', status: 'mitigated', time: '00:15:11', desc: 'Full TCP scan, 65535 ports in 3s' },
+            { name: 'Unusual Data Exfil', ip: '10.0.2.77', sev: 'medium', status: 'investigating', time: '00:08:30', desc: '240 MB outbound to unknown host' },
+            { name: 'Weak TLS Cipher', ip: '10.0.0.200', sev: 'low', status: 'mitigated', time: '23:55:00', desc: 'TLS 1.0 negotiated on public endpoint' },
+        ];
+
+        const AGENTS = [
+            { name: 'DETECT-ALPHA', role: 'Threat Detection', icon: '🔍', color: '#00ff41', status: 'active', uptime: '47h 22m', tasks: 312, acc: 97 },
+            { name: 'INTEL-BETA', role: 'Threat Intelligence', icon: '🧠', color: '#00e5ff', status: 'active', uptime: '47h 22m', tasks: 189, acc: 95 },
+            { name: 'RCA-GAMMA', role: 'Root Cause Analysis', icon: '⚙', color: '#ffd700', status: 'active', uptime: '47h 22m', tasks: 143, acc: 99 },
+            { name: 'RESP-DELTA', role: 'Auto Response', icon: '🛡', color: '#ff00cc', status: 'active', uptime: '47h 22m', tasks: 98, acc: 94 },
+            { name: 'LEARN-EPSILON', role: 'Adaptive Learning', icon: '📚', color: '#ff6600', status: 'active', uptime: '47h 22m', tasks: 105, acc: 98 },
+        ];
+
+        const REPORTS = [
+            { name: 'Daily Security Report', date: '2026-02-25', type: 'Daily', threats: 23, size: '1.2 MB' },
+            { name: 'Weekly Threat Summary', date: '2026-02-21', type: 'Weekly', threats: 147, size: '4.8 MB' },
+            { name: 'Monthly SOC Report', date: '2026-02-01', type: 'Monthly', threats: 612, size: '18.3 MB' },
+            { name: 'Q4 2025 Executive Report', date: '2026-01-01', type: 'Quarterly', threats: 2104, size: '52.7 MB' },
+            { name: 'Incident Report — SQLi Attack', date: '2026-02-24', type: 'Incident', threats: 7, size: '0.8 MB' },
+        ];
+
+        const LOG_MESSAGES = [
+            ['ok', '[DETECT-ALPHA] Threat signature matched — CVE-2024-1234'],
+            ['info', '[NETWORK] Packet inspection: 142,000 packets/min'],
+            ['warn', '[RCA-GAMMA] Anomalous process spawned: cmd.exe → powershell.exe'],
+            ['error', '[INTEL-BETA] CRITICAL: Ransomware pattern at 172.16.0.52'],
+            ['ok', '[RESP-DELTA] Firewall rule applied — IP 45.33.32.156 BLOCKED'],
+            ['info', '[LEARN-EPS] Model updated — 98.2% detection accuracy'],
+            ['warn', '[AUTH] Failed login from 10.0.0.88 (attempt 2,400)'],
+            ['ok', '[SHIELD] DDoS mitigation activated — 1.8M pkt/s absorbed'],
+            ['info', '[API] WebSocket clients: 3 connected'],
+            ['error', '[DETECT-ALPHA] XSS vector confirmed on /dashboard'],
+            ['warn', '[NET] Outbound traffic spike: +240 MB to external host'],
+            ['ok', '[SYSTEM] Checkpoint saved — memory dump archived'],
+            ['info', '[AGENTS] All 5 agents nominal'],
+            ['error', '[ALERT] Cobalt Strike beacon on port 4444'],
+            ['ok', '[RESP-DELTA] Auto-isolation of 10.0.1.14 executed'],
+        ];
+
+        const BRAIN_MSGS = [
+            'Analyzing behavioral pattern of IP 192.168.12.45...',
+            'Cross-referencing with MITRE ATT&CK framework...',
+            'Tactic identified: TA0001 — Initial Access',
+            'Confidence level: 94.7% — Threat confirmed',
+            'Dispatching RESP-DELTA for auto-mitigation...',
+            'Loading threat intelligence feed from STIX 2.1...',
+            'Correlating 847 events over 60-min sliding window...',
+            'Anomaly score: 0.913 (threshold: 0.85)',
+            'Root cause traced to misconfigured WAF rule #142',
+            'Recommendation: Patch CVE-2024-1234 immediately',
+            'Learning module updated with new attack signature',
+        ];
+
+        // ──────────────────────────────────────────
+        // BUILD THREATS PAGE
+        // ──────────────────────────────────────────
+        function buildThreats() {
+            const el = document.getElementById('threats-list');
+            el.innerHTML = THREATS.map(t => `
+    <div class="threat-item sev-${t.sev}">
+      <div class="sev-dot"></div>
+      <div>
+        <div class="threat-name">${t.name}</div>
+        <div class="threat-meta">SRC: ${t.ip} &nbsp;|&nbsp; ${t.time} &nbsp;|&nbsp; ${t.desc}</div>
+      </div>
+      <span class="threat-badge badge-${t.status}">${t.status.toUpperCase()}</span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline" style="padding:4px 10px;font-size:10px;" onclick="notify('🔍 Investigating: ${t.name}')">INVESTIGATE</button>
+        <button class="btn btn-primary" style="padding:4px 10px;font-size:10px;" onclick="notify('✅ Mitigating: ${t.name}')">MITIGATE</button>
+      </div>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // BUILD AGENTS PAGE
+        // ──────────────────────────────────────────
+        function buildAgents() {
+            document.getElementById('agents-grid').innerHTML = AGENTS.map(a => `
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-icon" style="background:${a.color}22;color:${a.color};border:1px solid ${a.color}44">${a.icon}</div>
+        <div><div class="agent-name" style="color:${a.color}">${a.name}</div><div class="agent-role">${a.role}</div></div>
+        <div style="margin-left:auto"><span class="status-active">● ACTIVE</span></div>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:8px">Uptime: <span style="color:var(--text)">${a.uptime}</span> &nbsp;|&nbsp; Tasks: <span style="color:${a.color}">${a.tasks}</span></div>
+      <div class="progress-row">
+        <div class="progress-label"><span>ACCURACY</span><span style="color:${a.color}">${a.acc}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${a.acc}%;background:${a.color}"></div></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-outline" style="padding:5px 10px;font-size:10px;color:${a.color};border-color:${a.color}" onclick="notify('📊 Monitoring ${a.name}')">MONITOR</button>
+        <button class="btn btn-outline" style="padding:5px 10px;font-size:10px;" onclick="notify('📜 Fetching logs for ${a.name}')">LOGS</button>
+      </div>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // BUILD REPORTS PAGE
+        // ──────────────────────────────────────────
+        function buildReports() {
+            document.getElementById('reports-list').innerHTML = REPORTS.map(r => `
+    <div class="report-row">
+      <div>
+        <div style="font-size:12px;color:var(--text);margin-bottom:3px">${r.name}</div>
+        <div style="font-size:10px;color:var(--dim)">${r.date} &nbsp;|&nbsp; ${r.type} &nbsp;|&nbsp; ${r.threats} threats &nbsp;|&nbsp; ${r.size}</div>
+      </div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:10px;" onclick="notify('⬇ Downloading: ${r.name}')">⬇ DOWNLOAD</button>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // LIVE LOG
+        // ──────────────────────────────────────────
+        let logBuffer = [];
+        function addLog(feed, type, msg) {
+            const t = new Date().toLocaleTimeString('en-GB');
+            logBuffer.push({ type, msg, t });
+            const el = document.getElementById(feed);
+            if (!el) return;
+            const div = document.createElement('div');
+            div.className = `log-line log-${type}`;
+            div.innerHTML = `<span class="log-time">[${t}]</span>${msg}`;
+            el.prepend(div);
+            if (el.children.length > 120) el.removeChild(el.lastChild);
+        }
+
+        function randomLog(feedId) {
+            const item = LOG_MESSAGES[Math.floor(Math.random() * LOG_MESSAGES.length)];
+            addLog(feedId, item[0], item[1]);
+        }
+        function randomBrain() {
+            const msg = BRAIN_MSGS[Math.floor(Math.random() * BRAIN_MSGS.length)];
+            addLog('agent-brain', 'ok', '[AI] ' + msg);
+        }
+
+        setInterval(() => { randomLog('live-log'); randomLog('event-log'); }, 1800);
+        setInterval(randomBrain, 3200);
+
+        // ──────────────────────────────────────────
+        // THREAT FEED (overview)
+        // ──────────────────────────────────────────
+        function buildThreatFeed() {
+            const el = document.getElementById('threat-feed');
+            el.innerHTML = THREATS.slice(0, 5).map(t => `
+    <div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+      <div class="sev-dot sev-${t.sev}" style="width:7px;height:7px;border-radius:50%;background:${t.sev === 'critical' ? 'var(--red)' : t.sev === 'high' ? 'var(--yellow)' : 'orange'};flex-shrink:0"></div>
+      <div>
+        <div style="font-size:11px">${t.name}</div>
+        <div style="font-size:10px;color:var(--dim)">${t.ip}</div>
+      </div>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // BAR CHART (overview)
+        // ──────────────────────────────────────────
+        function buildBarChart() {
+            const el = document.getElementById('bar-chart');
+            const vals = [4, 7, 3, 9, 12, 8, 15, 22, 18, 25, 30, 27, 20, 35, 28, 24, 32, 40, 38, 45, 52, 38, 29, 18];
+            const max = Math.max(...vals);
+            el.innerHTML = vals.map(v => `<div class="bar" style="height:${Math.round(v / max * 100)}%" title="${v} events"></div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // ANALYTICS CHART
+        // ──────────────────────────────────────────
+        function buildAnalyticsChart() {
+            const el = document.getElementById('analytics-chart');
+            const vals = [4, 7, 3, 9, 12, 8, 15, 22, 18, 25, 30, 27, 20, 35, 28, 24, 32, 40, 38, 45, 52, 38, 29, 18];
+            const max = Math.max(...vals);
+            el.innerHTML = vals.map(v => `<div class="bar" style="height:${Math.round(v / max * 100)}%" title="${v}"></div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // PIE CHART
+        // ──────────────────────────────────────────
+        function drawPie() {
+            const canvas = document.getElementById('pieCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const data = [
+                { label: 'Brute Force', val: 30, color: '#ff003c' },
+                { label: 'SQL Injection', val: 22, color: '#ffd700' },
+                { label: 'DDoS', val: 18, color: '#00e5ff' },
+                { label: 'Malware', val: 15, color: '#ff00cc' },
+                { label: 'Other', val: 15, color: '#00ff41' },
+            ];
+            const total = data.reduce((s, d) => s + d.val, 0);
+            let angle = -Math.PI / 2;
+            const cx = 100, cy = 80, r = 65;
+            ctx.clearRect(0, 0, 200, 160);
+            data.forEach(d => {
+                const slice = (d.val / total) * Math.PI * 2;
+                ctx.beginPath(); ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, angle, angle + slice);
+                ctx.closePath(); ctx.fillStyle = d.color; ctx.fill();
+                ctx.strokeStyle = '#050a05'; ctx.lineWidth = 2; ctx.stroke();
+                angle += slice;
+            });
+            document.getElementById('pie-legend').innerHTML = data.map(d => `
+    <div class="legend-item"><div class="legend-dot" style="background:${d.color}"></div>${d.label}: ${d.val}%</div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // AGENT PERF
+        // ──────────────────────────────────────────
+        function buildAgentPerf() {
+            document.getElementById('agent-perf').innerHTML = AGENTS.map(a => `
+    <div class="progress-row">
+      <div class="progress-label"><span style="color:${a.color}">${a.name}</span><span style="color:${a.color}">${a.acc}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${a.acc}%;background:${a.color}"></div></div>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // NETWORK MAP
+        // ──────────────────────────────────────────
+        const NODES = [
+            { id: 0, x: 240, y: 180, label: 'CORE-GW', role: 'Core Gateway', threat: 2, color: '#00ff41' },
+            { id: 1, x: 100, y: 80, label: 'DETECT', role: 'Detection Node', threat: 7, color: '#ff003c' },
+            { id: 2, x: 380, y: 80, label: 'WEB-SRV', role: 'Web Server', threat: 5, color: '#ffd700' },
+            { id: 3, x: 100, y: 290, label: 'DB-PRIM', role: 'Primary DB', threat: 3, color: '#00e5ff' },
+            { id: 4, x: 380, y: 290, label: 'EDGE-01', role: 'Edge Router', threat: 8, color: '#ff00cc' },
+        ];
+        const EDGES = [
+            { a: 0, b: 1, type: 'normal' }, { a: 0, b: 2, type: 'normal' },
+            { a: 0, b: 3, type: 'normal' }, { a: 0, b: 4, type: 'suspicious' },
+            { a: 1, b: 2, type: 'attack' }, { a: 3, b: 4, type: 'normal' },
+        ];
+        let selectedNode = null;
+        function initNetwork() {
+            const canvas = document.getElementById('netCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                // grid
+                ctx.strokeStyle = 'rgba(0,255,65,0.04)'; ctx.lineWidth = 1;
+                for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+                for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+                // edges
+                EDGES.forEach(e => {
+                    const a = NODES[e.a], b = NODES[e.b];
+                    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                    ctx.strokeStyle = e.type === 'attack' ? 'rgba(255,0,60,0.6)' : e.type === 'suspicious' ? 'rgba(255,215,0,0.5)' : 'rgba(0,255,65,0.25)';
+                    ctx.lineWidth = e.type === 'attack' ? 2 : 1.5;
+                    ctx.setLineDash(e.type === 'normal' ? [] : [5, 4]);
+                    ctx.stroke(); ctx.setLineDash([]);
+                });
+                // nodes
+                NODES.forEach(n => {
+                    const sel = selectedNode === n.id;
+                    ctx.beginPath(); ctx.arc(n.x, n.y, sel ? 22 : 16, 0, Math.PI * 2);
+                    ctx.fillStyle = n.color + '22'; ctx.fill();
+                    ctx.strokeStyle = n.color; ctx.lineWidth = sel ? 2.5 : 1.5; ctx.stroke();
+                    if (sel) {
+                        ctx.beginPath(); ctx.arc(n.x, n.y, 28, 0, Math.PI * 2);
+                        ctx.strokeStyle = n.color + '55'; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                    ctx.fillStyle = n.color; ctx.font = 'bold 10px Share Tech Mono';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(n.label, n.x, n.y);
+                    ctx.fillStyle = n.color + 'aa'; ctx.font = '9px Share Tech Mono';
+                    ctx.fillText('T:' + n.threat, n.x, n.y + 24);
+                });
+            }
+            draw();
+
+            canvas.onclick = function (e) {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+                NODES.forEach(n => {
+                    const dx = n.x - mx, dy = n.y - my;
+                    if (dx * dx + dy * dy < 20 * 20) {
+                        selectedNode = n.id;
+                        document.getElementById('node-details').innerHTML = `
+          <div style="margin-bottom:10px">
+            <div style="font-size:14px;color:${n.color};font-family:Orbitron,monospace">${n.label}</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:3px">${n.role}</div>
+          </div>
+          <div style="font-size:11px;margin-bottom:6px">Threat Level: <span style="color:${n.threat > 6 ? 'var(--red)' : n.threat > 3 ? 'var(--yellow)' : 'var(--green)'}">${n.threat}/10</span></div>
+          <div style="font-size:11px;color:var(--dim)">Status: <span style="color:var(--green)">● ONLINE</span></div>
+          <div style="font-size:11px;color:var(--dim);margin-top:6px">Connections: ${EDGES.filter(e => e.a === n.id || e.b === n.id).length}</div>
+          <button class="btn btn-primary" style="margin-top:12px;font-size:10px;padding:5px 12px" onclick="notify('🔎 Scanning ${n.label}...')">SCAN NODE</button>`;
+                        draw();
+                    }
+                });
+            };
+
+            // connection list
+            document.getElementById('conn-list').innerHTML = EDGES.map(e => `
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">
+      <span>${NODES[e.a].label} ↔ ${NODES[e.b].label}</span>
+      <span style="color:${e.type === 'attack' ? 'var(--red)' : e.type === 'suspicious' ? 'var(--yellow)' : 'var(--green)'}">${e.type.toUpperCase()}</span>
+    </div>`).join('');
+        }
+
+        // ──────────────────────────────────────────
+        // EVENT FILTER
+        // ──────────────────────────────────────────
+        function filterLogs(type) {
+            const el = document.getElementById('event-log');
+            const lines = [...el.querySelectorAll('.log-line')];
+            lines.forEach(l => {
+                if (type === 'all') { l.style.display = ''; }
+                else { l.style.display = l.classList.contains('log-' + type) ? '' : 'none'; }
+            });
+        }
+
+        // ──────────────────────────────────────────
+        // LIVE METRICS
+        // ──────────────────────────────────────────
+        function updateMetrics() {
+            const cpu = 20 + Math.floor(Math.random() * 40);
+            const mem = 50 + Math.floor(Math.random() * 30);
+            document.getElementById('cpu-val').textContent = cpu + '%';
+            document.getElementById('mem-val').textContent = mem + '%';
+            document.getElementById('cpu-bar').style.width = cpu + '%';
+            document.getElementById('mem-bar').style.width = mem + '%';
+            const hcpu = document.getElementById('h-cpu'); const phcpu = document.getElementById('ph-cpu');
+            if (hcpu) { hcpu.textContent = cpu + '%'; phcpu.style.width = cpu + '%'; }
+            const hmem = document.getElementById('h-mem'); const phmem = document.getElementById('ph-mem');
+            if (hmem) { hmem.textContent = mem + '%'; phmem.style.width = mem + '%'; }
+            // threats count
+            const t = 5 + Math.floor(Math.random() * 5);
+            document.getElementById('s-threats').textContent = t;
+            document.getElementById('s-events').textContent = 100 + Math.floor(Math.random() * 80);
+        }
+        setInterval(updateMetrics, 4000);
+
+        // ──────────────────────────────────────────
+        // INIT
+        // ──────────────────────────────────────────
+        buildThreats();
+        buildAgents();
+        buildReports();
+        buildThreatFeed();
+        buildBarChart();
+
+        // seed logs
+        for (let i = 0; i < 12; i++) { randomLog('live-log'); randomLog('event-log'); randomBrain(); }
+    </script>
+</body>
+
+</html>
